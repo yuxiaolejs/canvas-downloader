@@ -32,6 +32,13 @@ print("Step 0/2: Initialization")
 print(_dash)
 print(f"CWD: {os.getcwd()}")
 token = False
+
+status = os.stat(TOKEN_PATH)
+if(oct(status.st_mode)[-2:]!="00"):
+    print("[FATAL] Your token file might be visible to other people!")
+    print("[FATAL] Please change the mode of it to 500 using following command:")
+    print("[FATAL] chmod 500 "+TOKEN_PATH)
+    exit(1)
 try:
     with open(TOKEN_PATH, "r") as file:
         token = file.read()
@@ -53,6 +60,10 @@ modules = r.json()
 key = None
 sel = 0
 while(key!='\r'):
+    if(key=="\x1b"):
+        print("Aborted")
+        exit(0)
+
     if(key == "w"):
         if(sel>0):
             sel-=1
@@ -144,7 +155,7 @@ while(key!="\r"):
             else:
                 print(("-> " if idx==sel else "     ") + item["title"], flush=True)
     print(_dash)
-    print("   W/S: Move  A: Add  D: Remove  ESC: Abort\n            Enter: Download "+_down+"FILES"+_noStyle+"")
+    print("   W/S: Move  A: Add  D: Remove  ESC: Abort\n      Enter: Download files "+_down+"HIGHLIGHTED"+_noStyle+"")
     print(_ddsh)
     key = readTTY()
 
