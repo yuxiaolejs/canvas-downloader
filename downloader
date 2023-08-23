@@ -1,0 +1,248 @@
+#!/usr/bin/python
+
+from pathlib import Path
+import os
+import requests
+import json
+import sys, tty, termios
+
+# TTY INIT
+def readTTY():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(sys.stdin.fileno())
+        ch = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
+
+TOKEN_PATH = str(Path.home())+"/.canvas_token"
+_dash = "----------------------------------------------"
+_ddsh = "\n========== Version 0.0.1   @unicsyu =========="
+_titl = "====== Canvas File Downloader for Linux ======\n"
+_cls  = "\x1b[H\x1b[2J\x1b[H\x1b[f"
+_subColor = "\x1b[3;33m"
+_noStyle = "\x1b[0m"
+_sel = "\x1b[1;30;47m"
+_down = "\x1b[1;32m"
+
+print(_cls+_titl)
+print("Step 0/4: Initialization")
+print(_dash)
+print(f"CWD: {os.getcwd()}")
+token = False
+try:
+    with open(TOKEN_PATH, "r") as file:
+        token = file.read()
+    
+except Exception:
+    print("Failed to load canvas token, please make sure the token is stored in ~/.canvas_token")
+    token = input("To create that file, please enter your token: ")
+    with open(TOKEN_PATH, 'w') as file:
+        file.write(token)
+
+r = requests.get('https://ucsb.instructure.com/api/v1/courses', headers={'Authorization': f'Bearer {token}'})
+if(r.status_code!=200):
+    print("Failed to get modules, please double check your token")
+    exit(-1)
+
+courses = r.json()
+
+key = None
+sel = 0
+while(key!='\r'):
+    if(key=="\x1b"):
+        print("Aborted")
+        exit(0)
+    if(key == "w"):
+        if(sel>0):
+            sel-=1
+        else:
+            sel = len(courses)-1
+    elif(key=="s"):
+        if(sel>=len(courses)-1):
+            sel = 0
+        else:
+            sel+=1
+    
+    print(_cls+_titl)
+    print("Step 1/4: Select a course")
+    print(_dash)
+    for idx,course in enumerate(courses):
+        if("name" not in course):
+            del courses[idx]
+    for idx,course in enumerate(courses):
+        if(idx==sel):
+            print( _sel + "->" + course["name"] + _noStyle)
+        
+        else:
+            print("  "+course["name"])
+    print(_dash)
+    print("Press W/S to select, and Enter to confirm")
+    print(_ddsh)
+    key = readTTY()
+
+
+r = requests.get(f'https://ucsb.instructure.com/api/v1/courses/{courses[sel]["id"]}/modules', headers={'Authorization': f'Bearer {token}'})
+if(r.status_code!=200):
+    print("Failed to get modules, please double check your token")
+    exit(-1)
+
+modules = r.json()
+
+key = None
+sel = 0
+while(key!='\r'):
+    if(key=="\x1b"):
+        print("Aborted")
+        exit(0)
+    if(key == "w"):
+        if(sel>0):
+            sel-=1
+        else:
+            sel = len(modules)-1
+    elif(key=="s"):
+        if(sel>=len(modules)-1):
+            sel = 0
+        else:
+            sel+=1
+    
+    print(_cls+_titl)
+    print("Step 2/4: Select a module")
+    print(_dash)
+    for idx,module in enumerate(modules):
+        if(idx==sel):
+            print( _sel + "->" + module["name"] + _noStyle)
+        
+        else:
+            print("  "+module["name"])
+    print(_dash)
+    print("Press W/S to select, and Enter to confirm")
+    print(_ddsh)
+    key = readTTY()
+
+module_idx = sel
+if(module_idx>=len(modules)):
+    print("Invalid input")
+    exit(1)
+
+r = requests.get(modules[module_idx]['items_url'], headers={'Authorization': f'Bearer {token}'})
+if(r.status_code!=200):
+    print("Failed to get items")
+    exit(-1)
+
+items = r.json()
+
+# print(items)
+
+
+sel = 0
+key = None
+selArr = []
+while(items[sel]["type"]!="File"):
+    if(sel>=len(items)-1):
+        print("No file found in this module")
+        exit(1)
+    else:
+        sel+=1
+while(key!="\r"):
+    if(key=="\x1b"):
+        print("Aborted")
+        exit(0)
+    if(key == "w"):
+        if(sel>0):
+            sel-=1
+        else:
+            sel = len(items)-1
+        while(items[sel]["type"]!="File"):
+            if(sel>0):
+                sel-=1
+            else:
+                sel = len(items)-1
+    elif(key=="s"):
+        if(sel>=len(items)-1):
+            sel = 0
+        else:
+            sel+=1
+        while(items[sel]["type"]!="File"):
+            if(sel>=len(items)-1):
+                sel = 0
+            else:
+                sel+=1
+    elif(key=="a"):
+        if(sel not in selArr):
+            selArr.append(sel)
+    elif(key=="d"):
+        if(sel in selArr):
+            selArr.remove(sel)
+    print(_cls+_titl)
+    print("Step 3/4: Select a file")
+    print(_dash)
+    for idx,item in enumerate(items):
+        if(item["type"]=="SubHeader"):
+            print(_subColor + item["title"] + _noStyle, flush=True)
+        elif(item["type"] == "File"):
+            if(idx in selArr):
+                print( _down + ("-> " if idx==sel else "     ") + item["title"] + _noStyle)
+            else:
+                print(("-> " if idx==sel else "     ") + item["title"], flush=True)
+    print(_dash)
+    print("   W/S: Move  A: Add  D: Remove  ESC: Abort\n            Enter: Download "+_down+"FILES"+_noStyle+"")
+    print(_ddsh)
+    key = readTTY()
+
+
+def printProgress():
+    print(_cls+_titl)
+    print("Step 4/4: Wait!")
+    print(_dash)
+    for idx,item in enumerate(items):
+        if(item["type"]=="SubHeader"):
+            print(_subColor + item["title"] + _noStyle, flush=True)
+        elif(item["type"] == "File"):
+            if(idx in selArr):
+                print( _down+ "    " + item["title"] + _noStyle)
+            else:
+                print("    " + item["title"], flush=True)
+    print(_ddsh)
+
+success = []
+while(len(selArr)>0):
+    printProgress()
+    item_idx = selArr.pop()
+    if(item_idx>=len(items)):
+        print("Invalid input")
+        exit(1)
+    if(items[item_idx]['type']!='File'):
+        print("Invalid type, please select an item with 'File' type")
+        exit(1)
+
+    r = requests.get(items[item_idx]['url'], headers={'Authorization': f'Bearer {token}'})
+    if(r.status_code!=200):
+        print(f"Failed to get file meta: {items[item_idx]['url']}")
+        exit(-1)
+    file = r.json()
+
+    r = requests.get(file['url'], headers={'Authorization': f'Bearer {token}'})
+
+    if(r.status_code!=200):
+        print(f"Failed to download {file['filename']}")
+        exit(-1)
+
+    # print(file)
+
+    with open(file["filename"], 'wb') as fileHandle:
+        fileHandle.write(r.content)
+    success.append(file['filename'])
+    printProgress()
+
+print(_cls+_titl)
+print("Finished! Files downloaded:")
+print(_dash)
+for i in success:
+    print(i)
+print(_dash)
+print(f"Files can be found here:\n{os.getcwd()}")
+
+print(_ddsh)
