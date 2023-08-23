@@ -20,6 +20,10 @@ cd bin
 wget https://cdn.jsdelivr.net/gh/yuxiaolejs/canvas-downloader/cs64
 chmod 700 ~/bin/cs64
 ```
+Please make sure ~/bin is in your PATH. You can check it by running
+```
+echo $PATH
+```
 ### Configuration:
 To make this script work for you, you need to tell it the API token for your canvas account. To do so, you just need to run the program, and copy paste your token:
 
