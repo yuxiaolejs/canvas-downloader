@@ -28,10 +28,22 @@ _sel = "\x1b[2;30;47m"
 _down = "\x1b[2;30;46m"
 
 print(_cls+_titl)
-print("Step 0/2: Initialization")
+print("Step 0/3: Initialization")
 print(_dash)
 print(f"CWD: {os.getcwd()}")
 token = False
+
+
+try:
+    with open(TOKEN_PATH, "r") as file:
+        token = file.read()
+except Exception:
+    print("Failed to load canvas token, please make sure the token is stored in ~/.canvas_token")
+    print("More details here: https://github.com/yuxiaolejs/canvas-downloader#configuration")
+    token = input("To create that file, please enter your token: ")
+    with open(TOKEN_PATH, 'w') as file:
+        file.write(token)
+        os.chmod(TOKEN_PATH,0o500)
 
 status = os.stat(TOKEN_PATH)
 if(oct(status.st_mode)[-2:]!="00"):
@@ -39,15 +51,6 @@ if(oct(status.st_mode)[-2:]!="00"):
     print("[FATAL] Please change the mode of it to 500 using following command:")
     print("[FATAL] chmod 500 "+TOKEN_PATH)
     exit(1)
-try:
-    with open(TOKEN_PATH, "r") as file:
-        token = file.read()
-    
-except Exception:
-    print("Failed to load canvas token, please make sure the token is stored in ~/.canvas_token")
-    token = input("To create that file, please enter your token: ")
-    with open(TOKEN_PATH, 'w') as file:
-        file.write(token)
 
 
 r = requests.get('https://ucsb.instructure.com/api/v1/courses/12433/modules', headers={'Authorization': f'Bearer {token}'})
