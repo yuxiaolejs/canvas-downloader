@@ -6,6 +6,9 @@
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 
+#include <json/json.h>
+
+using namespace std;
 
 namespace
 {
@@ -25,14 +28,29 @@ int main(int, char **)
 		{
 		  // The first easiest example is to retreive the content of
 		  // a web page and put it in a stream.
-		  std::cout << curlpp::options::Url("http://example.com");
+		  std::ostringstream os;
+		  os << curlpp::options::Url("https://ucsb.instructure.com/api/v1/courses/12433/modules");
 
+			cout << os.str()<< endl;
+		  Json::Value root;
+		  Json::Reader reader;
+		   bool parsingSuccessful = reader.parse( os.str(), root );
+			if ( !parsingSuccessful )
+			{
+				cout << "Error parsing the string" << endl;
+			}
+			const Json::Value mynames = root;
+			cout<< mynames << endl;
+			// for ( int index = 0; index < mynames.size(); ++index )  
+			// {
+			// 	cout << mynames[index] << endl;
+			// }
 		  // You don't need to use just the standard outputs. You
 		  // can use any stream:
-		  std::ostringstream os;
-		  os << curlpp::options::Url("http://example.com");
+		//   std::ostringstream os;
+		//   os << curlpp::options::Url("http://example.com");
 		}
-
+	return 0;
 		// More elaborate example.
 		{
 		  // What the previous example done there was simply 
