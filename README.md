@@ -24,6 +24,10 @@ Please make sure ~/bin is in your PATH. You can check it by running
 ```
 echo $PATH
 ```
+After installation, you should be able to run this program using:
+```
+cs64
+```
 ### Configuration:
 To make this script work for you, you need to tell it the API token for your canvas account. To do so, you just need to run the program, and copy paste your token:
 
@@ -63,6 +67,14 @@ Press W/S to select, and Enter to confirm
 ========== Version 0.0.1   @unicsyu ==========
 ```
 Congratulations! It worked!
+
+If it does not work, try to reset your access_token by running:
+```
+rm ~/.canvas_token
+```
+And redo the configuration process
+
+*If you have any question or suggestion, please feel free to open and issue or pull request*
 
 ### Security concerns:
 This program uses your canvas API token, which comes with full access to your canvas account. To prevent any possible security issue, this program stores your token locally in your home folder as a dot file (~/.canvas_token) in plain text. So, **do NOT use this program on untrusted devices** and please **NEVER share your .canvas_token file with anyone**. Login to canvas and delete the token **IMMEDIATELY** when you realized this token has been leaked out. Make sure other people have no permission to this file on the csil system!
