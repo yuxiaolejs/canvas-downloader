@@ -97,7 +97,7 @@ if(module_idx>=len(modules)):
     print("Invalid input")
     exit(1)
 
-r = requests.get(modules[module_idx]['items_url'], headers={'Authorization': f'Bearer {token}'})
+r = requests.get(modules[module_idx]['items_url']+"?per_page=100", headers={'Authorization': f'Bearer {token}'})
 if(r.status_code!=200):
     print("Failed to get items")
     exit(-1)
@@ -149,10 +149,12 @@ while(key!="\r"):
     print(_cls+_titl)
     print("Step 2/3: Select a file")
     print(_dash)
+    # print("DEV")
+    # print(items)
     for idx,item in enumerate(items):
         if(item["type"]=="SubHeader"):
             print(_subColor + item["title"] + _noStyle, flush=True)
-        elif(item["type"] == "File"):
+        elif(item["type"] == "File" or True):
             if(idx in selArr):
                 print( _down + ("-> " if idx==sel else "     ") + item["title"] + _noStyle)
             else:
