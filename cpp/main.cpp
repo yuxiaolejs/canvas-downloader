@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
+#include <filesystem>
 
 #include <json/json.h>
 #include "request.hpp"
@@ -32,6 +33,17 @@ int main(int argc, char **argv, char **envp)
 	}
 	res = request(url, token);
 	vector<int> items = selectItem(res);
+	print(_cls+_titl);
+	print("Files downloaded:");
+	print(_dash);
+	for(int i=0; i<items.size();i++){
+		Json::Value r = request(res[items[i]].get("url","").asString(),token);
+		// cout << r << endl;
+		download(r, token);
+	}
+	print(_dash);
+	print("Files can be found here:");
+	print(std::filesystem::current_path());
 	return 0;
 }
 
