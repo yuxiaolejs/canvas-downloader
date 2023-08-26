@@ -154,7 +154,7 @@ while(key!="\r"):
     for idx,item in enumerate(items):
         if(item["type"]=="SubHeader"):
             print(_subColor + item["title"] + _noStyle, flush=True)
-        elif(item["type"] == "File" or True):
+        elif(item["type"] == "File"):
             if(idx in selArr):
                 print( _down + ("-> " if idx==sel else "     ") + item["title"] + _noStyle)
             else:

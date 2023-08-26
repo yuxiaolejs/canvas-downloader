@@ -153,6 +153,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/CanvasDownloader.dir/build.make CMakeFiles/CanvasDownloader.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+request.o: request.cpp.o
+.PHONY : request.o
+
+# target to build an object file
+request.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CanvasDownloader.dir/build.make CMakeFiles/CanvasDownloader.dir/request.cpp.o
+.PHONY : request.cpp.o
+
+request.i: request.cpp.i
+.PHONY : request.i
+
+# target to preprocess a source file
+request.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CanvasDownloader.dir/build.make CMakeFiles/CanvasDownloader.dir/request.cpp.i
+.PHONY : request.cpp.i
+
+request.s: request.cpp.s
+.PHONY : request.s
+
+# target to generate assembly for a file
+request.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CanvasDownloader.dir/build.make CMakeFiles/CanvasDownloader.dir/request.cpp.s
+.PHONY : request.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -165,6 +189,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... request.o"
+	@echo "... request.i"
+	@echo "... request.s"
 .PHONY : help
 
 
