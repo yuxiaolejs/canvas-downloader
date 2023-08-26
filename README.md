@@ -1,6 +1,9 @@
 # Canvas downloader for Linux!
 This downloader is created for CS64-M23 in UCSB, if you want to use it for other canvas courses or other institutions, please edit the "downloader" file to put in the URL of your LMS.
 
+# C++ Version available!
+As we learned in CS24, C++ is a great programming language! So I made a cpp version of this program, all files related are in the cpp folder, please feel free to play around! Binary will be uploaded as releases
+
 # CS64 students please read:
 ## First time users:
 ### Installation:
