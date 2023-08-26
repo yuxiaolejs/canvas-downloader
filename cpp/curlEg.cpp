@@ -12,10 +12,10 @@ using namespace std;
 
 namespace
 {
-const long MyPort = 80;
+	const long MyPort = 80;
 }
 
-/** 
+/**
  * This example is made to show you how you can use the Options.
  */
 int main(int, char **)
@@ -26,61 +26,61 @@ int main(int, char **)
 
 		// First easy example.
 		{
-		  // The first easiest example is to retreive the content of
-		  // a web page and put it in a stream.
-		  std::ostringstream os;
-		  os << curlpp::options::Url("https://ucsb.instructure.com/api/v1/courses/12433/modules");
+			// The first easiest example is to retreive the content of
+			// a web page and put it in a stream.
+			std::ostringstream os;
+			os << curlpp::options::Url("https://ucsb.instructure.com/api/v1/courses/12433/modules");
 
-			cout << os.str()<< endl;
-		  Json::Value root;
-		  Json::Reader reader;
-		   bool parsingSuccessful = reader.parse( os.str(), root );
-			if ( !parsingSuccessful )
+			cout << os.str() << endl;
+			Json::Value root;
+			Json::Reader reader;
+			bool parsingSuccessful = reader.parse(os.str(), root);
+			if (!parsingSuccessful)
 			{
 				cout << "Error parsing the string" << endl;
 			}
 			const Json::Value mynames = root;
-			cout<< mynames << endl;
-			// for ( int index = 0; index < mynames.size(); ++index )  
+			cout << mynames << endl;
+			// for ( int index = 0; index < mynames.size(); ++index )
 			// {
 			// 	cout << mynames[index] << endl;
 			// }
-		  // You don't need to use just the standard outputs. You
-		  // can use any stream:
-		//   std::ostringstream os;
-		//   os << curlpp::options::Url("http://example.com");
+			// You don't need to use just the standard outputs. You
+			// can use any stream:
+			//   std::ostringstream os;
+			//   os << curlpp::options::Url("http://example.com");
 		}
-	return 0;
+		return 0;
 		// More elaborate example.
 		{
-		  // What the previous example done there was simply 
-		  // to create a curlpp::Easy class, which is the basic
-		  // object in cURLpp, and then set the Url option.
-		  // curlpp::options classes are the primitives that allow to specify 
-		  // values to the requests. 
-		  curlpp::options::Url myUrl(std::string("http://example.com"));
-		  curlpp::Easy myRequest;
-		  myRequest.setOpt(myUrl);
+			// What the previous example done there was simply
+			// to create a curlpp::Easy class, which is the basic
+			// object in cURLpp, and then set the Url option.
+			// curlpp::options classes are the primitives that allow to specify
+			// values to the requests.
+			curlpp::options::Url myUrl(std::string("http://example.com"));
+			curlpp::Easy myRequest;
+			myRequest.setOpt(myUrl);
 
-		  // Now that all the options we wanted to set are there, we need to
-		  // actually do the request. the "perform" method does actually that.
-		  // With that call, the request will be done and the content of that URL
-		  // will be printed in std::cout (which is the default).
-		  myRequest.perform();
+			// Now that all the options we wanted to set are there, we need to
+			// actually do the request. the "perform" method does actually that.
+			// With that call, the request will be done and the content of that URL
+			// will be printed in std::cout (which is the default).
+			myRequest.perform();
 
-		  // If we wanted to put the content of the URL within a string stream
-		  // (or any type of std::ostream, for that matter), like the first example, 
-		  // we would use the WriteStrem option like this:
-		  std::ostringstream os;
-		  curlpp::options::WriteStream ws(&os);
-		  myRequest.setOpt(ws);
-		  myRequest.perform();
+			// If we wanted to put the content of the URL within a string stream
+			// (or any type of std::ostream, for that matter), like the first example,
+			// we would use the WriteStrem option like this:
+			std::ostringstream os;
+			curlpp::options::WriteStream ws(&os);
+			myRequest.setOpt(ws);
+			myRequest.perform();
 
-		  // There is some shorcut within curlpp that allow you to write shorter code
-		  // like this:
-		  os << myRequest;
+			// There is some shorcut within curlpp that allow you to write shorter code
+			// like this:
+			os << myRequest;
 
-		  // That would do exactly what the previous code was doing.
+			// That would do exactly what the previous code was doing.
 		}
 
 		// Creation of the URL option.
@@ -100,26 +100,24 @@ int main(int, char **)
 		myRequest.setOpt(*mytest);
 
 		// You can reuse the base option for other type of option
-		// and set the option to the request. but first, don't forget 
-		// to delete the previous memory. You can delete it since the 
+		// and set the option to the request. but first, don't forget
+		// to delete the previous memory. You can delete it since the
 		// option is internally duplicated for the request.
 		delete mytest;
 		mytest = myPort.clone();
 		myRequest.setOpt(*mytest);
 		delete mytest;
 
-		// You can clone an option directly to the same type of 
+		// You can clone an option directly to the same type of
 		// option.
 		curlpp::options::Url *myUrl3 = myUrl.clone();
 		myRequest.setOpt(myUrl3);
-		// Now myUrl3 is owned by the request we will NOT use 
+		// Now myUrl3 is owned by the request we will NOT use
 		// it anymore.
 
-
-		// You don't need to declare an option if you just want 
+		// You don't need to declare an option if you just want
 		// to use it once.
 		myRequest.setOpt(curlpp::options::Url("example.com"));
-
 
 		// Note that the previous line wasn't really efficient
 		// because we create the option, this option is duplicated
@@ -133,10 +131,8 @@ int main(int, char **)
 		// will be deleted when the request will be deleted, so
 		// don't use the instance further in your code.
 
-
 		// Doing the previous line is efficient as this:
 		myRequest.setOpt(myUrl.clone());
-
 
 		// You can retreive the value of a specific option.
 		std::cout << myUrl2.getValue() << std::endl;
@@ -145,15 +141,15 @@ int main(int, char **)
 		myRequest.perform();
 	}
 
-	catch( curlpp::RuntimeError &e )
+	catch (curlpp::RuntimeError &e)
 	{
 		std::cout << e.what() << std::endl;
 	}
 
-	catch( curlpp::LogicError &e )
+	catch (curlpp::LogicError &e)
 	{
 		std::cout << e.what() << std::endl;
 	}
-    
-  return 0;
+
+	return 0;
 }
