@@ -12,7 +12,7 @@ void multiLang::init()
 {
     map<string,string> en_us;
     en_us.insert({"_dash", "----------------------------------------------"});
-    en_us.insert({"_ddsh", "\n========== Version 0.0.1   @unicsyu =========="});
+    en_us.insert({"_ddsh", "\n========== Version 0.0.2   @unicsyu =========="});
     en_us.insert({"_title", "====== Canvas File Downloader for Linux ======\n"});
     en_us.insert({"_cls", "\x1b[H\x1b[2J\x1b[H\x1b[f"});
     en_us.insert({"_subColor", "\x1b[3m"});
@@ -36,7 +36,7 @@ void multiLang::init()
 
     map<string,string> zh_tw;
     zh_tw.insert({"_dash", "----------------------------------------------"});
-    zh_tw.insert({"_ddsh", "\n========== 軟體版本 0.0.1   @unicsyu =========="});
+    zh_tw.insert({"_ddsh", "\n========== 軟體版本 0.0.2   @unicsyu =========="});
     zh_tw.insert({"_title", "============  Canvas  文檔下載器  ============\n"});
     zh_tw.insert({"_cls", "\x1b[H\x1b[2J\x1b[H\x1b[f"});
     zh_tw.insert({"_subColor", "\x1b[3m"});
@@ -60,7 +60,7 @@ void multiLang::init()
 
     map<string,string> zh_cn;
     zh_cn.insert({"_dash", "----------------------------------------------"});
-    zh_cn.insert({"_ddsh", "\n========== 软件版本 0.0.1   @unicsyu =========="});
+    zh_cn.insert({"_ddsh", "\n========== 软件版本 0.0.2   @unicsyu =========="});
     zh_cn.insert({"_title", "============  Canvas  文件下载器  ============\n"});
     zh_cn.insert({"_cls", "\x1b[H\x1b[2J\x1b[H\x1b[f"});
     zh_cn.insert({"_subColor", "\x1b[3m"});
