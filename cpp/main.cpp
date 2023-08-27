@@ -16,10 +16,17 @@ vector<int> selectItem(Json::Value items);
 int getKey();
 void print(string str);
 
-int LANG_IDX = 2;
+int LANG_IDX = 0;
 
 int main(int argc, char **argv, char **envp)
 {
+	if(argc >= 2)
+	{
+		if(argv[1]==string("tw"))
+			LANG_IDX = 1;
+		if(argv[1]==string("cn"))
+			LANG_IDX = 2;
+	}
 	multiLang::init();
 	print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
 	print(multiLang::get(LANG_IDX, "step0"));
