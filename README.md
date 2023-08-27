@@ -4,6 +4,20 @@ This downloader is created for CS64-M23 in UCSB, if you want to use it for other
 # C++ Version available!
 As we learned in CS24, C++ is a great programming language! So I made a cpp version of this program, all files related are in the cpp folder, please feel free to play around! Binary will be uploaded as releases
 
+# New language added!
+In cpp version of this program, I added multilingual support, it now supports following languages:
+- English (en_us)
+- 繁體中文 (zh_tw)
+- 简体中文 (zh_cn)
+
+You can use command line arguments to switch between languages:
+```
+cs64    # English
+cs64 tw # Traditional Chinese
+cs64 cn # Simplified Chinese
+```
+New binary added to release
+
 # CS64 students please read:
 ## First time users:
 ### Installation:
