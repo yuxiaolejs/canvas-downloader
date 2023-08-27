@@ -8,6 +8,7 @@
 #include <json/json.h>
 #include "request.hpp"
 #include "stringConst.hpp"
+#include "utils.hpp"
 
 using namespace std;
 string selectModule(Json::Value modules);
@@ -17,15 +18,22 @@ void print(string str);
 
 int main(int argc, char **argv, char **envp)
 {
+	print(_cls+_titl);
+	print("Step 0/3: Initialization");
+	print(_dash);
 	string home = getenv("HOME");
 	ifstream tokenF(home + "/.canvas_token");
+	string token;
 	if (tokenF.fail())
 	{
-		cerr << "[fatal] failed to load token" << endl;
-		return 1;
+		print("Failed to load canvas token, please make sure the token is stored in ~/.canvas_token");
+    	print("More details here: https://github.com/yuxiaolejs/canvas-downloader#configuration");
+		token = createTokenFile();
+	} else
+	{
+		tokenF >> token;
 	}
-	string token;
-	tokenF >> token;
+	tokenF.close();
 	Json::Value res = request("https://ucsb.instructure.com/api/v1/courses/12433/modules", token);
 	string url = selectModule(res);
 	if (url.length() < 5)

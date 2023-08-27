@@ -45,6 +45,13 @@ Json::Value request(string url, string token)
 
 			myRequest.perform();
 
+			int code = curlpp::infos::ResponseCode::get(myRequest);
+			if(code!=200)
+			{
+				cout << "[fatal] Request failed with a code of " << code << endl;
+				exit(2);
+			}
+
 			os << myRequest;
 			Json::Value root;
 			Json::Reader reader;
