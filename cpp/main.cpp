@@ -7,8 +7,8 @@
 
 #include <json/json.h>
 #include "request.hpp"
-#include "stringConst.hpp"
 #include "utils.hpp"
+#include "multiLang.hpp"
 
 using namespace std;
 string selectModule(Json::Value modules);
@@ -16,18 +16,20 @@ vector<int> selectItem(Json::Value items);
 int getKey();
 void print(string str);
 
+int LANG_IDX = 2;
+
 int main(int argc, char **argv, char **envp)
 {
-	print(_cls+_titl);
-	print("Step 0/3: Initialization");
-	print(_dash);
+	multiLang::init();
+	print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
+	print(multiLang::get(LANG_IDX, "step0"));
+	print(multiLang::get(LANG_IDX, "_dash"));
 	string home = getenv("HOME");
 	ifstream tokenF(home + "/.canvas_token");
 	string token;
 	if (tokenF.fail())
 	{
-		print("Failed to load canvas token, please make sure the token is stored in ~/.canvas_token");
-    	print("More details here: https://github.com/yuxiaolejs/canvas-downloader#configuration");
+		print(multiLang::get(LANG_IDX, "tokenFail"));
 		token = createTokenFile();
 	} else
 	{
@@ -38,22 +40,23 @@ int main(int argc, char **argv, char **envp)
 	string url = selectModule(res);
 	if (url.length() < 5)
 	{
-		cerr << "[fatal] failed to get url of module" << endl;
+		cerr << multiLang::get(LANG_IDX, "moduleUrlFail") << endl;
 		exit(1);
 	}
 	res = request(url, token);
 	vector<int> items = selectItem(res);
-	print(_cls + _titl);
-	print("Files downloaded:");
-	print(_dash);
+	print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
+	print(multiLang::get(LANG_IDX, "step3"));
+	print(multiLang::get(LANG_IDX, "filesDownloaded"));
+	print(multiLang::get(LANG_IDX, "_dash"));
 	for (int i = 0; i < items.size(); i++)
 	{
 		Json::Value r = request(res[items[i]].get("url", "").asString(), token);
 		// cout << r << endl;
 		download(r, token);
 	}
-	print(_dash);
-	print("Files can be found here:");
+	print(multiLang::get(LANG_IDX, "_dash"));
+	print(multiLang::get(LANG_IDX, "fileLocation"));
 	print(std::filesystem::current_path());
 	return 0;
 }
@@ -65,7 +68,7 @@ string selectModule(Json::Value modules)
 	{
 		if (key == 0x1b)
 		{
-			print("Aborted");
+			print(multiLang::get(LANG_IDX, "aborted"));
 			exit(0);
 		}
 		if (key == 'w')
@@ -82,21 +85,21 @@ string selectModule(Json::Value modules)
 			else
 				sel += 1;
 		}
-		print(_cls + _titl);
-		print("Step 1/3: Select a module");
-		print(_dash);
+		print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
+		print(multiLang::get(LANG_IDX, "step1"));
+		print(multiLang::get(LANG_IDX, "_dash"));
 		for (int idx = 0; idx < modules.size(); idx++)
 		{
 			if (idx == sel)
-				cout << _sel << modules[idx].get("name", "").asString() << _noStyle << endl;
+				cout << multiLang::get(LANG_IDX, "_sel") << modules[idx].get("name", "").asString() << multiLang::get(LANG_IDX, "_noStyle") << endl;
 
 			else
 				cout << modules[idx].get("name", "").asString() << endl;
 		}
 
-		print(_dash);
-		print("Press W/S to select, and Enter to confirm");
-		print(_ddsh);
+		print(multiLang::get(LANG_IDX, "_dash"));
+		print(multiLang::get(LANG_IDX, "moduleSel"));
+		print(multiLang::get(LANG_IDX, "_ddsh"));
 		key = getKey();
 	}
 	return modules[sel].get("items_url", "").asString();
@@ -110,7 +113,7 @@ vector<int> selectItem(Json::Value items)
 	{
 		if (sel >= items.size() - 1)
 		{
-			print("No file found in this module");
+			print(multiLang::get(LANG_IDX, "noFileInModule"));
 			exit(1);
 		}
 		else
@@ -121,7 +124,7 @@ vector<int> selectItem(Json::Value items)
 	{
 		if (key == 0x1b)
 		{
-			print("Aborted");
+			print(multiLang::get(LANG_IDX, "aborted"));
 			exit(0);
 		}
 		if (key == 'w')
@@ -164,29 +167,29 @@ vector<int> selectItem(Json::Value items)
 			}
 			selArr.erase(it);
 		}
-		print(_cls + _titl);
-		print("Step 2/3: Select a file");
-		print(_dash);
+		print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
+		print(multiLang::get(LANG_IDX, "step2"));
+		print(multiLang::get(LANG_IDX, "_dash"));
 		// for (int i: selArr)
 		// 	cout << i << ' ';
 		for (int idx = 0; idx < items.size(); idx++)
 		{
 			Json::Value item = items[idx];
 			if (item.get("type", "").asString() == "SubHeader")
-				print(_subColor + item.get("title", "").asString() + _noStyle);
+				print(multiLang::get(LANG_IDX, "_subColor") + item.get("title", "").asString() + multiLang::get(LANG_IDX, "_noStyle"));
 			else if (item.get("type", "").asString() == "File")
 			{
 				vector<int>::iterator it = find(selArr.begin(), selArr.end(), idx);
 				if (it != selArr.end())
-					print(_down + (idx == sel ? "-> " : "     ") + item.get("title", "").asString() + _noStyle);
+					print(multiLang::get(LANG_IDX, "_down") + (idx == sel ? "-> " : "     ") + item.get("title", "").asString() + multiLang::get(LANG_IDX, "_noStyle"));
 				else
 					print((idx == sel ? "-> " : "     ") + item.get("title", "").asString());
 			}
 		}
 
-		print(_dash);
-		print("   W/S: Move  A: Add  D: Remove  ESC: Abort\n      Enter: Download files " + _down + "HIGHLIGHTED" + _noStyle + "");
-		print(_ddsh);
+		print(multiLang::get(LANG_IDX, "_dash"));
+		print(multiLang::get(LANG_IDX, "itemSel"));
+		print(multiLang::get(LANG_IDX, "_ddsh"));
 		key = getKey();
 	}
 	return selArr;
