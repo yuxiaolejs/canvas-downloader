@@ -10,6 +10,8 @@
 #include "utils.hpp"
 #include "multiLang.hpp"
 
+#define LANG LANGFROMCMAKE
+
 using namespace std;
 string selectCourse(Json::Value courses);
 string selectModule(Json::Value modules);
@@ -21,15 +23,13 @@ int LANG_IDX = 0;
 
 int main(int argc, char **argv, char **envp)
 {
-	if(argc >= 2)
-	{
-		if(argv[1]==string("tw"))
-			LANG_IDX = 1;
-		if(argv[1]==string("cn"))
-			LANG_IDX = 2;
-	}
+	string lang = LANG;
+	if (lang == string("tw"))
+		LANG_IDX = 1;
+	if (lang == string("cn"))
+		LANG_IDX = 2;
 	multiLang::init();
-	print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
+	print(multiLang::get(LANG_IDX, "_cls") + multiLang::get(LANG_IDX, "_title"));
 	print(multiLang::get(LANG_IDX, "step0"));
 	print(multiLang::get(LANG_IDX, "_dash"));
 	string home = getenv("HOME");
@@ -39,14 +39,15 @@ int main(int argc, char **argv, char **envp)
 	{
 		print(multiLang::get(LANG_IDX, "tokenFail"));
 		token = createTokenFile();
-	} else
+	}
+	else
 	{
 		tokenF >> token;
 	}
 	tokenF.close();
-    Json::Value courses = request("https://ucsb.instructure.com/api/v1/courses", token);
-    string curl = selectCourse(courses);
-	Json::Value res = request("https://ucsb.instructure.com/api/v1/courses/17902/modules", token);
+	Json::Value courses = request("https://ucsb.instructure.com/api/v1/courses", token);
+	string curl = selectCourse(courses);
+	Json::Value res = request("https://ucsb.instructure.com/api/v1/courses/" + curl + "/modules", token);
 	string url = selectModule(res);
 	if (url.length() < 5)
 	{
@@ -55,8 +56,8 @@ int main(int argc, char **argv, char **envp)
 	}
 	res = request(url, token);
 	vector<int> items = selectItem(res);
-	print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
-	print(multiLang::get(LANG_IDX, "step3"));
+	print(multiLang::get(LANG_IDX, "_cls") + multiLang::get(LANG_IDX, "_title"));
+	print(multiLang::get(LANG_IDX, "step4"));
 	print(multiLang::get(LANG_IDX, "filesDownloaded"));
 	print(multiLang::get(LANG_IDX, "_dash"));
 	for (int i = 0; i < items.size(); i++)
@@ -95,14 +96,19 @@ string selectCourse(Json::Value courses)
 			else
 				sel += 1;
 		}
-		print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
+		print(multiLang::get(LANG_IDX, "_cls") + multiLang::get(LANG_IDX, "_title"));
 		print(multiLang::get(LANG_IDX, "step1"));
 		print(multiLang::get(LANG_IDX, "_dash"));
 		for (int idx = 0; idx < courses.size(); idx++)
 		{
-            string courseName = courses[idx].get("name", "NULL").asString();
-            if(courseName == "NULL")
-                continue;
+			string courseName = courses[idx].get("name", "NULL").asString();
+			if (courseName == "NULL")
+			{
+				// Delete the course if it is not a course
+				courses.removeIndex(idx, &courses[idx]);
+				idx--;
+				continue;
+			}
 			if (idx == sel)
 				cout << multiLang::get(LANG_IDX, "_sel") << courseName << multiLang::get(LANG_IDX, "_noStyle") << endl;
 
@@ -115,7 +121,7 @@ string selectCourse(Json::Value courses)
 		print(multiLang::get(LANG_IDX, "_ddsh"));
 		key = getKey();
 	}
-	return courses[sel].get("items_url", "").asString();
+	return courses[sel].get("id", "").asString();
 }
 
 string selectModule(Json::Value modules)
@@ -142,8 +148,8 @@ string selectModule(Json::Value modules)
 			else
 				sel += 1;
 		}
-		print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
-		print(multiLang::get(LANG_IDX, "step1"));
+		print(multiLang::get(LANG_IDX, "_cls") + multiLang::get(LANG_IDX, "_title"));
+		print(multiLang::get(LANG_IDX, "step2"));
 		print(multiLang::get(LANG_IDX, "_dash"));
 		for (int idx = 0; idx < modules.size(); idx++)
 		{
@@ -224,8 +230,8 @@ vector<int> selectItem(Json::Value items)
 			}
 			selArr.erase(it);
 		}
-		print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
-		print(multiLang::get(LANG_IDX, "step2"));
+		print(multiLang::get(LANG_IDX, "_cls") + multiLang::get(LANG_IDX, "_title"));
+		print(multiLang::get(LANG_IDX, "step3"));
 		print(multiLang::get(LANG_IDX, "_dash"));
 		// for (int i: selArr)
 		// 	cout << i << ' ';
