@@ -11,6 +11,7 @@
 #include "multiLang.hpp"
 
 using namespace std;
+string selectCourse(Json::Value courses);
 string selectModule(Json::Value modules);
 vector<int> selectItem(Json::Value items);
 int getKey();
@@ -43,7 +44,9 @@ int main(int argc, char **argv, char **envp)
 		tokenF >> token;
 	}
 	tokenF.close();
-	Json::Value res = request("https://ucsb.instructure.com/api/v1/courses/12433/modules", token);
+    Json::Value courses = request("https://ucsb.instructure.com/api/v1/courses", token);
+    string curl = selectCourse(courses);
+	Json::Value res = request("https://ucsb.instructure.com/api/v1/courses/17902/modules", token);
 	string url = selectModule(res);
 	if (url.length() < 5)
 	{
@@ -66,6 +69,53 @@ int main(int argc, char **argv, char **envp)
 	print(multiLang::get(LANG_IDX, "fileLocation"));
 	print(std::filesystem::current_path());
 	return 0;
+}
+
+string selectCourse(Json::Value courses)
+{
+	int key = 0, sel = 0;
+	while (key != '\r')
+	{
+		if (key == 0x1b)
+		{
+			print(multiLang::get(LANG_IDX, "aborted"));
+			exit(0);
+		}
+		if (key == 'w')
+		{
+			if (sel > 0)
+				sel -= 1;
+			else
+				sel = courses.size() - 1;
+		}
+		else if (key == 's')
+		{
+			if (sel >= courses.size() - 1)
+				sel = 0;
+			else
+				sel += 1;
+		}
+		print(multiLang::get(LANG_IDX, "_cls")+multiLang::get(LANG_IDX, "_title"));
+		print(multiLang::get(LANG_IDX, "step1"));
+		print(multiLang::get(LANG_IDX, "_dash"));
+		for (int idx = 0; idx < courses.size(); idx++)
+		{
+            string courseName = courses[idx].get("name", "NULL").asString();
+            if(courseName == "NULL")
+                continue;
+			if (idx == sel)
+				cout << multiLang::get(LANG_IDX, "_sel") << courseName << multiLang::get(LANG_IDX, "_noStyle") << endl;
+
+			else
+				cout << courseName << endl;
+		}
+
+		print(multiLang::get(LANG_IDX, "_dash"));
+		print(multiLang::get(LANG_IDX, "moduleSel"));
+		print(multiLang::get(LANG_IDX, "_ddsh"));
+		key = getKey();
+	}
+	return courses[sel].get("items_url", "").asString();
 }
 
 string selectModule(Json::Value modules)
